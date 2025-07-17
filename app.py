@@ -39,7 +39,7 @@ def predict(img):
 
 # Project description and details using Markdown for rich formatting
 project_title = "# Is it a Bird? Is it a Plane? No, It's Superman!"
-project_author = "Created by: **Von Mendres (馬盛中)**"
+project_author = "Created by: **Von Breznev Mendres (馬盛中)**"
 
 project_description = """
 ### **Project Description**
@@ -60,7 +60,7 @@ technical_info = """
     * **Hugging Face Spaces:** The platform hosting this live demonstration.
 """
 
-footer = "July 2025 | Von Mendres (馬盛中)"
+footer = "July 2025 | Von Breznev Mendres (馬盛中)"
 
 example_images = [
     "examples/example_bird.jpg",

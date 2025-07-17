@@ -1,6 +1,6 @@
 ---
-title: Bird Plane Superman
-emoji: 🐠
+title: Is it a bird? Is it a plane? No, it's Superman!
+emoji: 💪🏿
 colorFrom: red
 colorTo: purple
 sdk: gradio

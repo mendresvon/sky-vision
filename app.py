@@ -2,42 +2,34 @@ import gradio as gr
 from fastai.vision.all import *
 import warnings
 
-# --- 0. SETUP & MODEL LOADING ---
-
-# Suppress the specific UserWarning from fastai about pickle
+# silence fastai pickle warning
 warnings.filterwarnings(
     "ignore",
     message="load_learner` uses Python's insecure pickle module.*",
     category=UserWarning,
 )
 
-# Load the trained model
+# load the trained model
 learn = load_learner("export.pkl")
 
-# Map the internal vocab names to the desired display names
+# map internal labels to display names
 LABEL_MAP = {"birds": "Bird", "planes": "Plane", "superman": "Superman"}
-
-# --- 1. CORE PREDICTION FUNCTION ---
 
 
 def predict(img):
     """
-    Takes an image, gets predictions from the fastai model, and returns
-    a dictionary with formatted labels and their corresponding probabilities.
+    predicts class probabilities for an image and formats labels
     """
-    # Get predictions from the model
     pred, pred_idx, probs = learn.predict(img)
 
-    # Create a dictionary of probabilities with the original labels
+    # combine labels with prediction probabilities
     predictions = dict(zip(learn.dls.vocab, map(float, probs)))
 
-    # Create a new dictionary with the formatted labels for display
+    # format labels and capitalize for the ui
     return {LABEL_MAP.get(k, k.capitalize()): v for k, v in predictions.items()}
 
 
-# --- 2. DEFINE GRADIO CONTENT & LAYOUT ---
-
-# Project description and details using Markdown for rich formatting
+# project metadata and description content
 project_title = "# Is it a Bird? Is it a Plane? No, It's Superman!"
 project_author = "Created by: **Von Breznev Mendres (馬盛中)**"
 
@@ -68,43 +60,35 @@ example_images = [
     "examples/example_superman.jpg",
 ]
 
-# --- 3. BUILD THE GRADIO BLOCKS INTERFACE ---
-
 with gr.Blocks(theme=gr.themes.Soft(), css="footer {visibility: hidden}") as demo:
-    # Main Title
     gr.Markdown(project_title)
     gr.Markdown(project_author)
 
     with gr.Row():
-        # Input Column
         with gr.Column(scale=1):
             input_image = gr.Image(type="pil", label="Upload an Image", height=350)
             submit_btn = gr.Button("Classify Image", variant="primary")
 
-            # Example images section
+            # use larger examples for better visibility
             gr.Examples(
                 examples=example_images,
                 inputs=input_image,
-                examples_per_page=3,  # Makes images larger
+                examples_per_page=3,
                 label="Click an example to try it out!",
             )
 
-        # Output Column
         with gr.Column(scale=1):
             gr.Markdown("### **Prediction Results**")
             output_label = gr.Label(num_top_classes=3, label="Model Confidence")
 
-    # Accordion for Project Details
     with gr.Accordion("About this Project & Technical Info", open=True):
         gr.Markdown(project_description)
         gr.Markdown(technical_info)
 
-    # Footer
     gr.Markdown(footer)
 
-    # --- 4. DEFINE COMPONENT INTERACTIONS ---
+    # link the click event to the prediction function
     submit_btn.click(fn=predict, inputs=input_image, outputs=output_label)
 
-# --- 5. LAUNCH THE APP ---
 if __name__ == "__main__":
     demo.launch()
